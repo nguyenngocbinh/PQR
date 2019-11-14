@@ -1,0 +1,127 @@
+---
+title: "MONTHLY PORTFOLIO QUALITY REPORT"
+author: "Phân tích kinh doanh"
+date: "15/11/2019"
+output: 
+  html_document:
+    #code_download: true
+    #code_folding: hide
+    number_sections: yes
+    theme: "default"
+    toc: TRUE
+    toc_float: TRUE
+    dev: 'svg'
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.height = 5, fig.width = 7, out.width = "70%")
+library(lubridate)
+library(dplyr)
+```
+
+```{r}
+report_date <- lubridate::ceiling_date(Sys.Date(), "month") + months(-1) - days(1)    #
+
+# Du no theo thang
+load("D:/Seabank/PQR/bal.rdata")
+
+rate <- bal %>% 
+  arrange(dayid) %>% 
+  mutate(rate = du_no / lag(du_no, 1)) %>% 
+  pull(rate) %>% 
+  psych::geometric.mean() %>% 
+  magrittr::subtract(1) %>% 
+  magrittr::multiply_by(100) %>% 
+  round(2) %>% 
+  paste0("%")
+
+report_bal <- round(bal[bal$dayid == report_date, ]$du_no / 1e12, 2)
+
+```
+
+
+# Dư nợ
+
+- Tổng dư nợ toàn hàng tăng trưởng tốt, trung bình khoảng `r rate`/ tháng, đạt được `r report_bal` nghìn tỷ đồng tháng `r format(report_date, "%m/%Y")`.
+
+```{r, fig.width = 2}
+knitr::include_graphics("figures/g1.png")
+```
+
+
+- Theo phân khúc khách hàng
+
+Dư nợ tăng ở cả 3 phân khúc khách hàng. Trong đó, phân khúc SME và PFS tăng nhanh hơn CBD
+
+```{r}
+knitr::include_graphics("figures/customer_type.gif")
+```
+
+- Theo khu vực
+
+```{r}
+knitr::include_graphics("figures/region_name.gif")
+```
+
+- Theo nhóm book 
+
+```{r}
+knitr::include_graphics("figures/g3.png")
+```
+
+
+# Số hợp đồng
+
+## Theo các khoảng dư nợ
+
+```{r}
+knitr::include_graphics("figures/g4.png")
+```
+
+## Theo đặc điểm danh mục
+```{r}
+knitr::include_graphics("figures/g5.png")
+```
+
+
+# Quá hạn
+
+## Tỷ lệ quá hạn trên 90 ngày (theo khách hàng)
+
+```{r}
+knitr::include_graphics("figures/g6.png")
+```
+
+## Số lượng khách hàng theo ngày quá hạn
+
+```{r}
+knitr::include_graphics("figures/g7.png")
+```
+
+## Dư nợ quá hạn
+
+- Theo phân khúc KH
+
+```{r}
+knitr::include_graphics("figures/g8.png")
+```
+
+- Theo campaign
+
+```{r}
+knitr::include_graphics("figures/g9.png")
+```
+
+- Theo chi nhánh
+
+```{r}
+knitr::include_graphics("figures/g9a.png")
+```
+
+
+## Đặc điểm của các hợp đồng có OVD
+```{r}
+knitr::include_graphics("figures/g10.png")
+```
